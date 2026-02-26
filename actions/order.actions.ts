@@ -313,3 +313,76 @@ export async function cancelOrderAction(orderId: string) {
     return { success: false, message: error.message };
   }
 }
+
+// ─── Admin: Get All Orders ───
+export async function adminGetAllOrdersAction(page = 1, limit = 100) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required", data: [] };
+    }
+
+    await connectDB();
+
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      Order.find()
+        .populate("buyer", "name email avatar")
+        .populate("seller", "name email avatar")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Order.countDocuments(),
+    ]);
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(orders)),
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  } catch (error: any) {
+    return { success: false, data: [], message: error.message };
+  }
+}
+
+// ─── Admin: Update Order Status (Approve / Ship / Deliver) ───
+export async function adminUpdateOrderStatusAction(
+  orderId: string,
+  orderStatus: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
+) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required" };
+    }
+
+    await connectDB();
+
+    const order = await Order.findById(orderId);
+    if (!order) return { success: false, message: "Order not found" };
+
+    order.orderStatus = orderStatus;
+
+    // If confirmed, mark payment as paid (COD approval)
+    if (orderStatus === "confirmed") {
+      order.paymentStatus = "paid";
+    }
+
+    await order.save();
+
+    const updated = await Order.findById(orderId)
+      .populate("buyer", "name email avatar")
+      .populate("seller", "name email avatar")
+      .lean();
+
+    return {
+      success: true,
+      message: `Order ${orderStatus}`,
+      data: JSON.parse(JSON.stringify(updated)),
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+}

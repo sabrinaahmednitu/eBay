@@ -24,6 +24,8 @@ export default function Header() {
     }
   };
 
+   
+
   const handleLogout = async () => {
     await dispatch(logout());
     setShowUserMenu(false);

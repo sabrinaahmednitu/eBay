@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { register, googleLogin, clearError } from "@/store/slices/authSlice";
+import { ShoppingCart, Store, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 
 declare global {
   interface Window {
@@ -119,9 +120,7 @@ export default function RegisterPage() {
         {/* Error Messages */}
         {(error || localError) && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
-            <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
+            <AlertCircle className="w-4 h-4 shrink-0" />
             {localError || error}
           </div>
         )}
@@ -187,14 +186,9 @@ export default function RegisterPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
               >
                 {showPassword ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                  </svg>
+                  <EyeOff className="w-5 h-5" />
                 ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  <Eye className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -223,24 +217,26 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setRole("buyer")}
-                className={`py-3 rounded-lg border-2 font-medium transition ${
+                className={`py-3 rounded-lg border-2 font-medium transition flex items-center justify-center gap-2 ${
                   role === "buyer"
                     ? "border-blue-600 bg-blue-50 text-blue-700"
                     : "border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                🛒 Buy
+                <ShoppingCart className="w-5 h-5" />
+                Buy
               </button>
               <button
                 type="button"
                 onClick={() => setRole("seller")}
-                className={`py-3 rounded-lg border-2 font-medium transition ${
+                className={`py-3 rounded-lg border-2 font-medium transition flex items-center justify-center gap-2 ${
                   role === "seller"
                     ? "border-blue-600 bg-blue-50 text-blue-700"
                     : "border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                🏪 Sell
+                <Store className="w-5 h-5" />
+                Sell
               </button>
             </div>
           </div>
@@ -252,10 +248,7 @@ export default function RegisterPage() {
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
+                <Loader2 className="w-5 h-5 animate-spin" />
                 Creating account...
               </span>
             ) : (
